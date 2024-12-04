@@ -314,7 +314,7 @@ C=======================================
 
       mt=10
 
-      open(mt,file='airfoil.dat')
+      open(mt,file='work/airfoil-snowed.dat')
 
 CDS   JAIRF: ODD NUMBER (starting from TE)
 CDS   LOWER TE TO LE
