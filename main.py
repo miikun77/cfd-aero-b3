@@ -42,9 +42,41 @@ def execute_euler():
     else:
         print("Euler execution failed")
 
-# ...existing code...
+def add_snow_effect(parameter):
+    # airfoil.datを読み込み
+    with open("airfoil.dat", "r") as file:
+        lines = file.readlines()
+    
+    # ヘッダーを保持
+    header = lines[:2]
+    data_lines = lines[2:]
+    
+    # 座標データを取得
+    data = []
+    for line in data_lines:
+        x_str, y_str = line.strip().split()
+        x = float(x_str)
+        y = float(y_str)
+        data.append([x, y])
+    
+    # 三次関数を定義 (f(x) = a * x * (1 - x)^2)
+    def cubic_function(x, a):
+        return a * x * (1 - x)**2
+    
+    # 上側の翼に雪を追加
+    half = len(data) // 2
+    for i in range(half):
+        x, y = data[i]
+        data[i][1] += cubic_function(x, parameter)
+    
+    # データを書き込み
+    with open("airfoil.dat", "w") as file:
+        file.writelines(header)
+        for x, y in data:
+            file.write(f"{x}\t{y}\n")
 
 if __name__ == "__main__":
     create_directories()
+    add_snow_effect(parameter=0.05)
     compile_mesh()
     # ...existing code...
