@@ -65,12 +65,12 @@ def add_snow_effect(parameter):
     
     # 上側の翼に雪を追加
     half = len(data) // 2
-    for i in range(half):
+    for i in range(half, len(data)):
         x, y = data[i]
         data[i][1] += cubic_function(x, parameter)
     
     # データを書き込み
-    with open("airfoil.dat", "w") as file:
+    with open("work/airfoil-snowed.dat", "w") as file:
         file.writelines(header)
         for x, y in data:
             file.write(f"{x}\t{y}\n")
@@ -79,4 +79,3 @@ if __name__ == "__main__":
     create_directories()
     add_snow_effect(parameter=0.05)
     compile_mesh()
-    # ...existing code...
