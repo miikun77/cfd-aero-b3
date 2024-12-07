@@ -38,7 +38,7 @@ C =====================================================================
       WRITE(*,*) 'The 2D Euler solver using MacCormack method'
 
       mtin    = 11
-      open(mtin,file="mesh.d",form='formatted')
+      open(mtin,file="work/mesh.d",form='formatted')
 
         READ(mtin,INPUT)
         write(*,INPUT)
