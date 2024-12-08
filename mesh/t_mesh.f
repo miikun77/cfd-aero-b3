@@ -24,9 +24,9 @@ C=======================================================================
 CIN   NAMELIST/INPUTG/JMAX,KMAX,JWAKE,ROUT,XDW,DS1,DS2,MTOUT
 C............................................................. INPUT
 CDEFALULT
-      JMAX  = 101
-      KMAX  = 24
-      JWAKE = 16
+      JMAX  = 201
+      KMAX  = 50
+      JWAKE = 32
       DS1   = 0.03
       DS2   = 0.8
       ROUT  = 5.
