@@ -137,7 +137,7 @@ def save_result(parameter, fsmach, alpha, results, append=False):
 if __name__ == "__main__":
     fsmach_values = [0.800, 0.900]
     alpha_values = [1.00, 1.25]
-    parameter = 0.05
+    parameter = 1
     # ここからメイン処理
 
     create_directories()

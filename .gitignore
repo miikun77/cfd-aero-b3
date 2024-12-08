@@ -1,4 +1,5 @@
 /build
 /work
+/result_*
 
-*-test.dat
+*.csv
