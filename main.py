@@ -115,22 +115,31 @@ def execute_euler():
         print("Euler execution failed")
         print(''.join(stderr))
 
-def save_results_to_csv(parameter, fsmach, alpha, results):
+def save_results_to_csv(parameter, fsmach, alpha, results, append=False):
     results.update({"parameter": parameter, "fsmach": fsmach, "alpha": alpha})
-    with open("result.csv", "w", newline='') as csvfile:
+    mode = 'a' if append else 'w'
+    with open("result.csv", mode, newline='') as csvfile:
         fieldnames = ["parameter", "fsmach", "alpha", "Cl_integration", "Cl_surface", "Cd_surface"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         
-        writer.writeheader()
+        if not append:
+            writer.writeheader()
         writer.writerow(results)
 
 if __name__ == "__main__":
-    create_directories()
-    fsmach = 0.800
-    alpha = 1.25
+    fsmach_values = [0.800, 0.900]
+    alpha_values = [1.00, 1.25]
     parameter = 0.05
-    create_mesh_d(fsmach=fsmach, alpha=alpha)
+    # ここからメイン処理
+
+    create_directories()
     add_snow_effect(parameter=parameter)
     compile_mesh()
-    results = execute_euler()
-    save_results_to_csv(parameter=parameter, fsmach=fsmach, alpha=alpha, results=results)
+
+    first_write = True
+    for fsmach in fsmach_values:
+        for alpha in alpha_values:
+            create_mesh_d(fsmach=fsmach, alpha=alpha)
+            results = execute_euler()
+            save_results_to_csv(parameter=parameter, fsmach=fsmach, alpha=alpha, results=results, append=not first_write)
+            first_write = False

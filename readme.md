@@ -17,6 +17,7 @@ python main.py
 - `t_mesh.f` の `CDEFALULT`
 - `mesh.d` の 各種数値 (`main.py` の `create_mesh_d` で指定)
 - `airfoil.dat` をどのようなファイルにするか（初期）
+- `main.py` の`main` 関数にある parameter と、fsmach, alpha の配列
 
 ## 生成ファイル
 
