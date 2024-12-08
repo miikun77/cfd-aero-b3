@@ -76,7 +76,7 @@ def create_mesh_d(fsmach, alpha):
         file.write(f"   fsmach={fsmach}, alpha={alpha},\n")
         file.write("   mesh_file='work/mesh.xyz', q_file='work/mesh.q',\n")
         file.write("   restart=.fault.,\n")
-        file.write("   n_steps=20000, cdt=0.9, eps4=20.,  jtail=17\n")
+        file.write("   n_steps=20000, cdt=0.9, eps4=20.,  jtail=33\n")
         file.write(" &END\n")
 
 
@@ -88,6 +88,10 @@ def execute_euler():
     for line in iter(process.stdout.readline, ''):
         print(line, end='')
         stdout.append(line)
+        if re.search(r"ITIME =\s*\d+:   RESIDUAL=\s*NaN", line):
+            process.terminate()
+            print("NaN detected in residual, terminating process.")
+            return None
     process.stdout.close()
 
     for line in iter(process.stderr.readline, ''):
@@ -117,6 +121,12 @@ def execute_euler():
         print(''.join(stderr))
 
 def save_result(parameter, fsmach, alpha, results, append=False):
+    if results is None:
+        results = {
+            "Cl_integration": float('nan'),
+            "Cl_surface": float('nan'),
+            "Cd_surface": float('nan')
+        }
     results.update({"parameter": parameter, "fsmach": fsmach, "alpha": alpha})
     mode = 'a' if append else 'w'
     with open("result.csv", mode, newline='') as csvfile:
@@ -128,29 +138,33 @@ def save_result(parameter, fsmach, alpha, results, append=False):
         writer.writerow(results)
     
     # フォルダを作成してファイルをコピー
-    folder_name = f"result_{fsmach}_{alpha}"
+    folder_name = f"result_{parameter}_{fsmach}_{alpha}"
     os.makedirs(folder_name, exist_ok=True)
-    shutil.copy("work/mesh.q", folder_name)
-    shutil.copy("work/residual.dat", folder_name)
-    shutil.copy("work/surf.dat", folder_name)
+    files_to_copy = ["work/mesh.q", "work/residual.dat", "work/surf.dat"]
+    for file in files_to_copy:
+        if os.path.exists(file):
+            shutil.copy(file, folder_name)
 
 if __name__ == "__main__":
-    fsmach_values = [0.800, 0.900]
-    alpha_values = [1.00, 1.25]
-    parameter = 1
-    # ここからメイン処理
+    parameter_values = [0, 0.2, 0.4, 0.6]
+    fsmach_values = [0.700, 0.800, 0.900]
+    alpha_values = [0, 2.5, 5]
 
+    # ここからメイン処理
     create_directories()
-    add_snow_effect(parameter=parameter)
-    compile_mesh()
 
     first_write = True
-    for fsmach in fsmach_values:
-        for alpha in alpha_values:
-            create_mesh_d(fsmach=fsmach, alpha=alpha)
-            results = execute_euler()
-            save_result(parameter=parameter, fsmach=fsmach, alpha=alpha, results=results, append=not first_write)
-            first_write = False
+    for parameter in parameter_values:
+        add_snow_effect(parameter=parameter)
+        compile_mesh()
+        for fsmach in fsmach_values:
+            for alpha in alpha_values:
+                create_mesh_d(fsmach=fsmach, alpha=alpha)
+                results = execute_euler()
+                save_result(parameter=parameter, fsmach=fsmach, alpha=alpha, results=results, append=not first_write)
+                if results is None:
+                    continue
+                first_write = False
 
     os.remove("work/mesh.q")
     os.remove("work/residual.dat")
