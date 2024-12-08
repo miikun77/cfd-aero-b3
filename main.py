@@ -2,6 +2,7 @@ import subprocess
 import os
 import re
 import csv
+import shutil
 
 def create_directories():
     os.makedirs("build", exist_ok=True)
@@ -115,7 +116,7 @@ def execute_euler():
         print("Euler execution failed")
         print(''.join(stderr))
 
-def save_results_to_csv(parameter, fsmach, alpha, results, append=False):
+def save_result(parameter, fsmach, alpha, results, append=False):
     results.update({"parameter": parameter, "fsmach": fsmach, "alpha": alpha})
     mode = 'a' if append else 'w'
     with open("result.csv", mode, newline='') as csvfile:
@@ -125,6 +126,13 @@ def save_results_to_csv(parameter, fsmach, alpha, results, append=False):
         if not append:
             writer.writeheader()
         writer.writerow(results)
+    
+    # フォルダを作成してファイルをコピー
+    folder_name = f"result_{fsmach}_{alpha}"
+    os.makedirs(folder_name, exist_ok=True)
+    shutil.copy("work/mesh.q", folder_name)
+    shutil.copy("work/residual.dat", folder_name)
+    shutil.copy("work/surf.dat", folder_name)
 
 if __name__ == "__main__":
     fsmach_values = [0.800, 0.900]
@@ -141,5 +149,10 @@ if __name__ == "__main__":
         for alpha in alpha_values:
             create_mesh_d(fsmach=fsmach, alpha=alpha)
             results = execute_euler()
-            save_results_to_csv(parameter=parameter, fsmach=fsmach, alpha=alpha, results=results, append=not first_write)
+            save_result(parameter=parameter, fsmach=fsmach, alpha=alpha, results=results, append=not first_write)
             first_write = False
+
+    os.remove("work/mesh.q")
+    os.remove("work/residual.dat")
+    os.remove("work/surf.dat")
+    exit(0)
