@@ -69,10 +69,10 @@ def compile_euler():
         print("Euler compilation failed")
         print(result.stderr)
 
-def create_mesh_d():
+def create_mesh_d(fsmach, alpha):
     with open("work/mesh.d", "w") as file:
         file.write("&INPUT\n")
-        file.write("   fsmach=0.800, alpha=1.25,\n")
+        file.write(f"   fsmach={fsmach}, alpha={alpha},\n")
         file.write("   mesh_file='work/mesh.xyz', q_file='work/mesh.q',\n")
         file.write("   restart=.fault.,\n")
         file.write("   n_steps=20000, cdt=0.9, eps4=20.,  jtail=17\n")
@@ -122,7 +122,7 @@ def execute_euler():
 
 if __name__ == "__main__":
     create_directories()
-    create_mesh_d()
+    create_mesh_d(fsmach=0.800, alpha=1.25)
     add_snow_effect(parameter=0.05)
     compile_mesh()
     execute_euler()

@@ -15,7 +15,7 @@ python main.py
 ## 変更すべき箇所
 
 - `t_mesh.f` の `CDEFALULT`
-- `mesh.d` の 各種数値 (`main.py` で指定)
+- `mesh.d` の 各種数値 (`main.py` の `create_mesh_d` で指定)
 - `airfoil.dat` をどのようなファイルにするか（初期）
 
 ## 生成ファイル
