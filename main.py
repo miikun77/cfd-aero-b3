@@ -1,5 +1,7 @@
 import subprocess
 import os
+import re
+import csv
 
 def create_directories():
     os.makedirs("build", exist_ok=True)
@@ -77,12 +79,46 @@ def create_mesh_d():
         file.write(" &END\n")
 
 def execute_euler():
-    result = subprocess.run(["./build/2deuler"], text=True)
-    if result.returncode == 0:
+    process = subprocess.Popen(["./build/2deuler"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    stdout, stderr = [], []
+
+    for line in iter(process.stdout.readline, ''):
+        print(line, end='')
+        stdout.append(line)
+    process.stdout.close()
+
+    for line in iter(process.stderr.readline, ''):
+        print(line, end='')
+        stderr.append(line)
+    process.stderr.close()
+
+    process.wait()
+
+    if process.returncode == 0:
         print("Euler execution successful")
+        
+        # 出力を解析
+        output = ''.join(stdout)
+        cl_integration = re.search(r"Cl \(integration of Cp_lower - Cp_upper\) =\s+([\d.E+-]+)", output)
+        cl_surface = re.search(r"Cl \(surface integration of pressure\) =\s+([\d.E+-]+)", output)
+        cd_surface = re.search(r"Cd \(surface integration of pressure\) =\s+([\d.E+-]+)", output)
+        
+        results = {
+            "Cl_integration": float(cl_integration.group(1)) if cl_integration else None,
+            "Cl_surface": float(cl_surface.group(1)) if cl_surface else None,
+            "Cd_surface": float(cd_surface.group(1)) if cd_surface else None
+        }
+        
+        # CSVに保存
+        with open("result.csv", "w", newline='') as csvfile:
+            fieldnames = ["Cl_integration", "Cl_surface", "Cd_surface"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            
+            writer.writeheader()
+            writer.writerow(results)
     else:
         print("Euler execution failed")
-
+        print(''.join(stderr))
 
 if __name__ == "__main__":
     create_directories()
