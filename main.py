@@ -76,7 +76,7 @@ def create_mesh_d(fsmach, alpha):
         file.write(f"   fsmach={fsmach}, alpha={alpha},\n")
         file.write("   mesh_file='work/mesh.xyz', q_file='work/mesh.q',\n")
         file.write("   restart=.fault.,\n")
-        file.write("   n_steps=20000, cdt=0.9, eps4=20.,  jtail=33\n")
+        file.write("   n_steps=20000, cdt=0.5, eps4=30.,  jtail=33\n")
         file.write(" &END\n")
 
 
@@ -146,9 +146,9 @@ def save_result(parameter, fsmach, alpha, results, append=False):
             shutil.copy(file, folder_name)
 
 if __name__ == "__main__":
-    parameter_values = [0, 0.2, 0.4, 0.6]
-    fsmach_values = [0.700, 0.800, 0.900]
-    alpha_values = [0, 2.5, 5]
+    parameter_values = [0, 0.1, 0.2]
+    fsmach_values = [0.75, 0.80, 0.85]
+    alpha_values = [0, 2, 5, 7]
 
     # ここからメイン処理
     create_directories()
