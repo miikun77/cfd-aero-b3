@@ -1,2 +1,2 @@
-Cl_integration,Cl_surface,Cd_surface
-0.750945032,0.749839723,0.0588499792
+fsmach,alpha,Cl_integration,Cl_surface,Cd_surface
+0.8,1.25,0.750945032,0.749839723,0.0588499792
